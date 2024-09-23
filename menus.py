@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class Menu(tk.Menu):
     def __init__(self, parent):
         super().__init__(parent, tearoff=0) # add tearoff
@@ -8,13 +7,20 @@ class Menu(tk.Menu):
 class FileMenu(Menu):
     def __init__(self, parent, textarea):
         super().__init__(parent)
+        self.parent = parent # main menu
         self.textarea = textarea
         
-        self.add_command(label='New', command='')
+        self.add_command(label='New', command=self.new)
         self.add_command(label='Open', command='')
         self.add_command(label='Save', command='')
         self.add_command(label='Save As', command='')
-        self.add_command(label='Exit', command='')
+        self.add_command(label='Exit', command=self.exit)
+    
+    def new(self):
+        self.textarea.delete(1.0, tk.END) # use 1.0 because this is how you indicate the first line (1 -> first line, 0 -> position of character)
+        
+    def exit(self):
+        self.parent.master.quit()
         
 class EditMenu(Menu):
     def __init__(self, parent, textarea):

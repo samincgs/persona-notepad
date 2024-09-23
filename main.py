@@ -1,5 +1,4 @@
 import customtkinter as ctk
-import tkinter as tk
 from menus import Menu, FileMenu, EditMenu, FormatMenu, ColorMenu
 
 
@@ -11,6 +10,8 @@ class App(ctk.CTk):
         self.geometry('800x600')
         self.resizable(False, False)
         
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
         
         # main menu
         menu = Menu(self) #TODO Change the color of the menu so it looks better
@@ -32,7 +33,7 @@ class App(ctk.CTk):
         
         # add main menu to root App
         self.config(menu=menu)
-        self.textarea.pack(expand=True, fill='both')
+        self.textarea.grid(row=0, column=0, sticky='nsew')
      
 if __name__ == '__main__':
     app = App()
