@@ -11,14 +11,18 @@ class App(ctk.CTk):
         self.geometry('800x600')
         self.resizable(False, False)
         
+        
         # main menu
         menu = Menu(self) #TODO Change the color of the menu so it looks better
+
+        # main textarea
+        self.textarea = ctk.CTkTextbox(self, wrap='word', corner_radius=0)
         
         # submenus
-        filemenu = FileMenu(menu) # filemenu
-        editmenu = EditMenu(menu) # edit menu
-        formatmenu = FormatMenu(menu) # format menu
-        colormenu = ColorMenu(menu)
+        filemenu = FileMenu(menu, textarea=self.textarea) # filemenu
+        editmenu = EditMenu(menu, textarea=self.textarea) # edit menu
+        formatmenu = FormatMenu(menu, textarea=self.textarea) # format menu
+        colormenu = ColorMenu(menu, textarea=self.textarea)
         
         # add submenus to the main menu
         menu.add_cascade(label='File', menu=filemenu)
@@ -28,6 +32,7 @@ class App(ctk.CTk):
         
         # add main menu to root App
         self.config(menu=menu)
+        self.textarea.pack(expand=True, fill='both')
      
 if __name__ == '__main__':
     app = App()
