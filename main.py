@@ -1,10 +1,12 @@
 import customtkinter as ctk
+
 from menus import Menu, FileMenu, EditMenu, FormatMenu, ColorMenu
+from settings import *
 
 
 class App(ctk.CTk):
     def __init__(self):
-        super().__init__()
+        super().__init__(fg_color='black')
         ctk.set_appearance_mode('light')
         self.title('Notepad')
         self.geometry('800x600')
@@ -17,7 +19,7 @@ class App(ctk.CTk):
         menu = Menu(self) #TODO Change the color of the menu so it looks better
 
         # main textarea
-        self.textarea = ctk.CTkTextbox(self, wrap='word', corner_radius=0)
+        self.textarea = ctk.CTkTextbox(self, wrap='word', corner_radius=CORNER_RADIUS, font=(DEFAULT_FONT, DEFAULT_FONT_SIZE), spacing2=DEFAULT_LINE_HEIGHT)
         
         # submenus
         filemenu = FileMenu(menu, textarea=self.textarea) # filemenu

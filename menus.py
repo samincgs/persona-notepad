@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
+from settings import *
+
 
 class Menu(tk.Menu):
     def __init__(self, parent):
@@ -11,8 +13,7 @@ class FileMenu(Menu):
         self.parent = parent # main menu
         self.textarea = textarea
         self.current_file = None
-        
-        
+
         self.add_command(label='New', command=self.new)
         self.add_command(label='Open', command=self.open)
         self.add_command(label='Save', command=self.save)
@@ -66,15 +67,57 @@ class FormatMenu(Menu):
         self.textarea = textarea
         self.word_wrap = 'word'
         self.word_wrap_str = 'On'
+        self.fonts = FONTS
+        self.font_sizes = FONT_SIZES
+        self.line_heights = LINE_HEIGHTS
+        
+        self.current_font = DEFAULT_FONT
+        self.current_size = DEFAULT_FONT_SIZE
+        self.current_line_height = DEFAULT_LINE_HEIGHT
         
         # additional submenus
         self.font_menu = Menu(self)
         self.font_size_menu = Menu(self)
+        self.line_height_menu = Menu(self)
         
+        # format menu
         self.add_command(label=f'Word Wrap: {self.word_wrap_str}', command=self.word_wrap_toggle) # TODO add a variable controlling on and off
+        
+        # font menu TODO use a for loop to simplify
+        self.font_menu.add_command(label=f'{self.fonts[0]}', command=lambda f=self.fonts[0]: self.change_font(f)) # Arial
+        self.font_menu.add_command(label=f'{self.fonts[1]}', command=lambda f=self.fonts[1]: self.change_font(f)) # Comic Sans MS
+        self.font_menu.add_command(label=f'{self.fonts[2]}', command=lambda f=self.fonts[2]: self.change_font(f)) # Times New Roman
+        self.font_menu.add_command(label=f'{self.fonts[3]}', command=lambda f=self.fonts[3]: self.change_font(f) ) # MS Gothic
+         
+        # font size menu TODO use a for loop to simplify
+        self.font_size_menu.add_command(label=f'{self.font_sizes[0]}', command=lambda fs=self.font_sizes[0]: self.change_size(fs)) # 12
+        self.font_size_menu.add_command(label=f'{self.font_sizes[1]}', command=lambda fs=self.font_sizes[1]: self.change_size(fs)) # 16
+        self.font_size_menu.add_command(label=f'{self.font_sizes[2]}', command=lambda fs=self.font_sizes[2]: self.change_size(fs)) # 20
+        self.font_size_menu.add_command(label=f'{self.font_sizes[3]}', command=lambda fs=self.font_sizes[3]: self.change_size(fs)) # 24
+        self.font_size_menu.add_command(label=f'{self.font_sizes[4]}', command=lambda fs=self.font_sizes[4]: self.change_size(fs)) # 28
+        self.font_size_menu.add_command(label=f'{self.font_sizes[5]}', command=lambda fs=self.font_sizes[5]: self.change_size(fs)) # 32
+        
+        # line height menu
+        self.line_height_menu.add_command(label=f'{self.line_heights[0]}', command=lambda lh=self.line_heights[0]: self.change_line_height(lh))
+        self.line_height_menu.add_command(label=f'{self.line_heights[1]}', command=lambda lh=self.line_heights[1]: self.change_line_height(lh))
+        self.line_height_menu.add_command(label=f'{self.line_heights[2]}', command=lambda lh=self.line_heights[2]: self.change_line_height(lh))
         
         self.add_cascade(label='Font', menu=self.font_menu)
         self.add_cascade(label='Font Size', menu=self.font_size_menu)
+        self.add_cascade(label='Line Height', menu=self.line_height_menu)
+        
+    # pass through each individual font if button is pressed and change the font
+    def change_font(self, font):
+        self.current_font = font
+        self.textarea.configure(font=(self.current_font, self.current_size))
+        
+    def change_size(self, size):
+        self.current_size = size
+        self.textarea.configure(font=(self.current_font, self.current_size))
+    
+    def change_line_height(self, line_height):
+        self.current_line_height = line_height
+        self.textarea.configure(spacing2=self.current_line_height)
         
     def word_wrap_toggle(self):
         # change word wrap
