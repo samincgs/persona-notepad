@@ -28,11 +28,12 @@ class FileMenu(Menu):
     def open(self):
         opened_file = filedialog.askopenfilename(defaultextension='.txt',filetypes=[('Text Files', '*.txt')])
         self.current_file = opened_file
-        f = open(opened_file, mode='r')
-        self.new()
-        file_data = f.read()
-        self.textarea.insert(text=file_data, index=1.0)
-        f.close()
+        if opened_file:
+            f = open(opened_file, mode='r')
+            self.new()
+            file_data = f.read()
+            self.textarea.insert(text=file_data, index=1.0)
+            f.close()
     
     def save(self):
         if self.current_file:
@@ -44,10 +45,11 @@ class FileMenu(Menu):
      
     def save_as(self):
         save_file = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Text Files', '.txt')])
-        self.current_file = save_file
-        f = open(save_file, 'w')
-        f.write(self.textarea.get(1.0, tk.END))
-        f.close()
+        if save_file:
+            self.current_file = save_file
+            f = open(save_file, 'w')
+            f.write(self.textarea.get(1.0, tk.END))
+            f.close()
         
 class EditMenu(Menu):
     def __init__(self, parent, textarea):
@@ -62,15 +64,27 @@ class FormatMenu(Menu):
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea
+        self.word_wrap = 'word'
+        self.word_wrap_str = 'On'
         
         # additional submenus
         self.font_menu = Menu(self)
         self.font_size_menu = Menu(self)
         
-        self.add_command(label='Word Wrap: On') # TODO add a variable controlling on and off
+        self.add_command(label=f'Word Wrap: {self.word_wrap_str}', command=self.word_wrap_toggle) # TODO add a variable controlling on and off
         
         self.add_cascade(label='Font', menu=self.font_menu)
         self.add_cascade(label='Font Size', menu=self.font_size_menu)
+        
+    def word_wrap_toggle(self):
+        # change word wrap
+        self.word_wrap = 'none' if self.word_wrap == 'word' else 'word'
+        # change the word wrap string
+        self.word_wrap_str = 'On' if self.word_wrap == 'word' else 'Off'
+        
+        # configure it in the GUI
+        self.textarea.configure(wrap=self.word_wrap)
+        self.entryconfig(0, label=f'Word Wrap: {self.word_wrap_str}')
         
 class ColorMenu(Menu):
     def __init__(self, parent, textarea):
