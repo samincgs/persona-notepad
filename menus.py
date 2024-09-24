@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 
 class Menu(tk.Menu):
     def __init__(self, parent):
@@ -9,11 +10,13 @@ class FileMenu(Menu):
         super().__init__(parent)
         self.parent = parent # main menu
         self.textarea = textarea
+        self.current_file = None
+        
         
         self.add_command(label='New', command=self.new)
-        self.add_command(label='Open', command='')
-        self.add_command(label='Save', command='')
-        self.add_command(label='Save As', command='')
+        self.add_command(label='Open', command=self.open)
+        self.add_command(label='Save', command=self.save)
+        self.add_command(label='Save As', command=self.save_as)
         self.add_command(label='Exit', command=self.exit)
     
     def new(self):
@@ -21,6 +24,30 @@ class FileMenu(Menu):
         
     def exit(self):
         self.parent.master.quit()
+        
+    def open(self):
+        opened_file = filedialog.askopenfilename(defaultextension='.txt',filetypes=[('Text Files', '*.txt')])
+        self.current_file = opened_file
+        f = open(opened_file, mode='r')
+        self.new()
+        file_data = f.read()
+        self.textarea.insert(text=file_data, index=1.0)
+        f.close()
+    
+    def save(self):
+        if self.current_file:
+            f = open(self.current_file, 'w')
+            f.write(self.textarea.get(1.0, tk.END))
+            f.close()
+        else:
+            self.save_as()
+     
+    def save_as(self):
+        save_file = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Text Files', '.txt')])
+        self.current_file = save_file
+        f = open(save_file, 'w')
+        f.write(self.textarea.get(1.0, tk.END))
+        f.close()
         
 class EditMenu(Menu):
     def __init__(self, parent, textarea):

@@ -23,7 +23,7 @@ class App(ctk.CTk):
         filemenu = FileMenu(menu, textarea=self.textarea) # filemenu
         editmenu = EditMenu(menu, textarea=self.textarea) # edit menu
         formatmenu = FormatMenu(menu, textarea=self.textarea) # format menu
-        colormenu = ColorMenu(menu, textarea=self.textarea)
+        colormenu = ColorMenu(menu, textarea=self.textarea) # color menu
         
         # add submenus to the main menu
         menu.add_cascade(label='File', menu=filemenu)
