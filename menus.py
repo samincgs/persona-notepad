@@ -19,7 +19,7 @@ class FileMenu(Menu):
         self.add_command(label='Save', command=self.save)
         self.add_command(label='Save As', command=self.save_as)
         self.add_command(label='Exit', command=self.exit)
-    
+        
     def new(self):
         self.textarea.delete(1.0, tk.END) # use 1.0 because this is how you indicate the first line (1 -> first line, 0 -> position of character)
         
@@ -28,15 +28,15 @@ class FileMenu(Menu):
         
     def open(self):
         opened_file = filedialog.askopenfilename(defaultextension='.txt',filetypes=[('Text Files', '*.txt')])
-        self.current_file = opened_file
         if opened_file:
+            self.current_file = opened_file
             f = open(opened_file, mode='r')
             self.new()
             file_data = f.read()
             self.textarea.insert(text=file_data, index=1.0)
             f.close()
     
-    def save(self):
+    def save(self, event=None):
         if self.current_file:
             f = open(self.current_file, 'w')
             f.write(self.textarea.get(1.0, tk.END))
@@ -56,6 +56,8 @@ class EditMenu(Menu):
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea
+        self.undo_stack = []
+        self.redo_stack = []
         
         self.add_command(label='Undo', command='')
         self.add_command(label='Redo', command='')
@@ -127,7 +129,7 @@ class FormatMenu(Menu):
         
         # configure it in the GUI
         self.textarea.configure(wrap=self.word_wrap)
-        self.entryconfig(0, label=f'Word Wrap: {self.word_wrap_str}')
+        self.entryconfig(0, label=f'Word Wrap: {self.word_wrap_str}') # configure the menu item at a certain index
         
 class ColorMenu(Menu):
     def __init__(self, parent, textarea):
@@ -139,10 +141,10 @@ class ColorMenu(Menu):
         self.add_command(label='Red', command=self.turn_red)
         
     def turn_white(self):
-        self.textarea.configure(text_color='black', fg_color='white')
+        self.textarea.configure(text_color=TEXT_COLORS['BLACK'], fg_color=BACKGROUND_COLORS['WHITE'])
         
     def turn_black(self):
-        self.textarea.configure(text_color='white', fg_color='black')
+        self.textarea.configure(text_color=TEXT_COLORS['WHITE'], fg_color=BACKGROUND_COLORS['BLACK'])
         
     def turn_red(self):
-       self.textarea.configure(text_color='white', fg_color='red')
+       self.textarea.configure(text_color=TEXT_COLORS['WHITE'], fg_color=BACKGROUND_COLORS['RED'])
