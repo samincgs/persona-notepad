@@ -26,15 +26,16 @@ class App(ctk.CTk):
         self.formatmenu = FormatMenu(menu, textarea=self.textarea) # format menu
         self.colormenu = ColorMenu(menu, textarea=self.textarea) # color menu
         
-        # add keybinds
-        # Always add event keybinds to main application
-        self.configure_keybinds()
-        
         # add submenus to the main menu
         menu.add_cascade(label='File', menu=self.filemenu)
         menu.add_cascade(label='Edit', menu=self.editmenu)
         menu.add_cascade(label='Format', menu=self.formatmenu)
         menu.add_cascade(label='Color', menu=self.colormenu)
+        
+        # add keybinds
+        # Always add event keybinds to main application
+        self.configure_keybinds()
+        
         
         # add main menu to root App
         self.config(menu=menu)
@@ -43,6 +44,7 @@ class App(ctk.CTk):
     def configure_keybinds(self):
         # for saving functionality
         self.bind('<Control-s>', self.filemenu.save)
+       
      
 if __name__ == '__main__':
     app = App()

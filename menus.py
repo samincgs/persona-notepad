@@ -52,7 +52,7 @@ class FileMenu(Menu):
             f.write(self.textarea.get(1.0, tk.END))
             f.close()
         
-class EditMenu(Menu):
+class EditMenu(Menu): #TODO: ADD REDO AND UNDO Functionality
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea
@@ -61,7 +61,6 @@ class EditMenu(Menu):
         
         self.add_command(label='Undo', command='')
         self.add_command(label='Redo', command='')
-        
         
 class FormatMenu(Menu):
     def __init__(self, parent, textarea):
