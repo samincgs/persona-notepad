@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-from settings import *
+from config import *
 
 
 class Menu(tk.Menu):
@@ -56,11 +56,22 @@ class EditMenu(Menu): #TODO: ADD REDO AND UNDO Functionality
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea
+        
         self.undo_stack = []
         self.redo_stack = []
         
         self.add_command(label='Undo', command='')
         self.add_command(label='Redo', command='')
+        
+    def undo(self, event=None):
+        key = self.undo_stack.pop()
+        
+        
+    def redo(self, event=None):
+        print('redo')
+        
+    def track(self, event=None):
+        self.undo_stack.append(event)
         
 class FormatMenu(Menu):
     def __init__(self, parent, textarea):
@@ -130,7 +141,7 @@ class FormatMenu(Menu):
         self.textarea.configure(wrap=self.word_wrap)
         self.entryconfig(0, label=f'Word Wrap: {self.word_wrap_str}') # configure the menu item at a certain index
         
-class ColorMenu(Menu):
+class BackgroundColorMenu(Menu):
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea

@@ -1,6 +1,7 @@
 import customtkinter as ctk
-from menus import Menu, FileMenu, EditMenu, FormatMenu, ColorMenu
-from settings import *
+from tkinter import Text
+from menus import Menu, FileMenu, EditMenu, FormatMenu, BackgroundColorMenu
+from config import *
 
 
 class App(ctk.CTk):
@@ -24,13 +25,13 @@ class App(ctk.CTk):
         self.filemenu = FileMenu(menu, textarea=self.textarea) # filemenu
         self.editmenu = EditMenu(menu, textarea=self.textarea) # edit menu
         self.formatmenu = FormatMenu(menu, textarea=self.textarea) # format menu
-        self.colormenu = ColorMenu(menu, textarea=self.textarea) # color menu
+        self.colormenu = BackgroundColorMenu(menu, textarea=self.textarea) # color menu
         
         # add submenus to the main menu
         menu.add_cascade(label='File', menu=self.filemenu)
         menu.add_cascade(label='Edit', menu=self.editmenu)
         menu.add_cascade(label='Format', menu=self.formatmenu)
-        menu.add_cascade(label='Color', menu=self.colormenu)
+        menu.add_cascade(label='Background Color', menu=self.colormenu)
         
         # add keybinds
         # Always add event keybinds to main application
@@ -44,6 +45,10 @@ class App(ctk.CTk):
     def configure_keybinds(self):
         # for saving functionality
         self.bind('<Control-s>', self.filemenu.save)
+        # for undo and redo functionality
+        self.bind('<Control-z>', self.editmenu.undo)
+        self.bind('<Control-y>', self.editmenu.redo)
+        self.bind('<Key>', self.editmenu.track)
        
      
 if __name__ == '__main__':
