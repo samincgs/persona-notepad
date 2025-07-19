@@ -2,10 +2,27 @@ import tkinter as tk
 from tkinter import filedialog
 from config import *
 
+IGNORE_KEYS = {
+'Shift_L', 'Shift_R',
+'Control_L', 'Control_R',
+'Alt_L', 'Alt_R',
+'Caps_Lock',
+'Meta_L', 'Meta_R', 'Super_L', 'Super_R', 'Win_L', 'Win_R',
+'Left', 'Right', 'Up', 'Down',
+'Home', 'end-1c',
+'Page_Up', 'Page_Down',
+'Insert',
+'Num_Lock', 'Scroll_Lock', 'Pause',
+'Print',
+'Menu',
+'Escape',
+'Tab'  
+}
+        
 
 class Menu(tk.Menu):
     def __init__(self, parent):
-        super().__init__(parent, tearoff=0) # add tearoff
+        super().__init__(parent, tearoff=0) 
       
 class FileMenu(Menu):
     def __init__(self, parent, textarea):
@@ -21,7 +38,7 @@ class FileMenu(Menu):
         self.add_command(label='Exit', command=self.exit)
         
     def new(self):
-        self.textarea.delete(1.0, tk.END) # use 1.0 because this is how you indicate the first line (1 -> first line, 0 -> position of character)
+        self.textarea.delete("1.0", 'end-1c') # use "1.0" because this is how you indicate the first line (1 -> first line, 0 -> position of character)
         
     def exit(self):
         self.parent.master.quit()
@@ -33,13 +50,13 @@ class FileMenu(Menu):
             f = open(opened_file, mode='r')
             self.new()
             file_data = f.read()
-            self.textarea.insert(text=file_data, index=1.0)
+            self.textarea.insert(text=file_data, index="1.0")
             f.close()
     
     def save(self, event=None):
         if self.current_file:
             f = open(self.current_file, 'w')
-            f.write(self.textarea.get(1.0, tk.END))
+            f.write(self.textarea.get("1.0", 'end-1c'))
             f.close()
         else:
             self.save_as()
@@ -49,7 +66,7 @@ class FileMenu(Menu):
         if save_file:
             self.current_file = save_file
             f = open(save_file, 'w')
-            f.write(self.textarea.get(1.0, tk.END))
+            f.write(self.textarea.get("1.0", 'end-1c'))
             f.close()
         
 class EditMenu(Menu): #TODO: ADD REDO AND UNDO Functionality
@@ -64,14 +81,34 @@ class EditMenu(Menu): #TODO: ADD REDO AND UNDO Functionality
         self.add_command(label='Redo', command='')
         
     def undo(self, event=None):
-        key = self.undo_stack.pop()
+        if len(self.undo_stack) > 1:
+            current_text = self.textarea.get("1.0", 'end-1c')
+            self.redo_stack.append(current_text)
+            
+            self.undo_stack.pop()
+            text = self.undo_stack[-1]
+            
+            self.textarea.delete("1.0", 'end-1c')
+            self.textarea.insert(index="1.0", text=text)
+        else:
+            self.textarea.delete("1.0", 'end-1c')
         
         
     def redo(self, event=None):
-        print('redo')
+        if self.redo_stack:
+            current_text = self.textarea.get("1.0", 'end-1c')
+            self.undo_stack.append(current_text)
+            text = self.redo_stack.pop()
+            self.textarea.delete("1.0", 'end-1c')
+            self.textarea.insert(index="1.0", text=text)
+        
         
     def track(self, event=None):
-        self.undo_stack.append(event)
+        if event.keysym not in IGNORE_KEYS:
+            text = self.textarea.get("1.0", 'end-1c')
+            self.undo_stack.append(text)
+            self.redo_stack.clear()
+        
         
 class FormatMenu(Menu):
     def __init__(self, parent, textarea):

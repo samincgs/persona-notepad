@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from tkinter import Text
 from menus import Menu, FileMenu, EditMenu, FormatMenu, BackgroundColorMenu
 from config import *
 
@@ -20,7 +19,6 @@ class App(ctk.CTk):
 
         # main textarea
         self.textarea = ctk.CTkTextbox(self, wrap='word', corner_radius=CORNER_RADIUS, font=(DEFAULT_FONT, DEFAULT_FONT_SIZE), spacing2=DEFAULT_LINE_HEIGHT, bg_color=BACKGROUND_COLORS['WHITE'])
-        
         # submenus
         self.filemenu = FileMenu(menu, textarea=self.textarea) # filemenu
         self.editmenu = EditMenu(menu, textarea=self.textarea) # edit menu
@@ -31,12 +29,11 @@ class App(ctk.CTk):
         menu.add_cascade(label='File', menu=self.filemenu)
         menu.add_cascade(label='Edit', menu=self.editmenu)
         menu.add_cascade(label='Format', menu=self.formatmenu)
-        menu.add_cascade(label='Background Color', menu=self.colormenu)
+        menu.add_cascade(label='Background Color', menu=self.colormenu, background='#4FA4D8')
         
         # add keybinds
         # Always add event keybinds to main application
         self.configure_keybinds()
-        
         
         # add main menu to root App
         self.config(menu=menu)
@@ -48,6 +45,7 @@ class App(ctk.CTk):
         # for undo and redo functionality
         self.bind('<Control-z>', self.editmenu.undo)
         self.bind('<Control-y>', self.editmenu.redo)
+        
         self.bind('<Key>', self.editmenu.track)
        
      
