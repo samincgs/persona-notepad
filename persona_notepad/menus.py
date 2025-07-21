@@ -1,8 +1,10 @@
 import tkinter as tk
+import os
 import customtkinter as ctk
+import pygame
 from tkinter import filedialog
 from PIL import Image
-from persona_notepad.config import *
+from config import *
 
 IGNORE_KEYS = {
 'Shift_L', 'Shift_R',
@@ -139,7 +141,7 @@ class FormatMenu(Menu):
         self.line_height_menu = Menu(self)
         
         # format menu
-        self.add_command(label=f'Word Wrap: {self.word_wrap_str}', command=self.word_wrap_toggle) # TODO add a variable controlling on and off
+        self.add_command(label=f'Word Wrap: {self.word_wrap_str}', command=self.word_wrap_toggle)
         
         # font menu TODO use a for loop to simplify
         self.font_menu.add_command(label=f'{self.fonts[0]}', command=lambda f=self.fonts[0]: self.change_font(f)) # Arial
@@ -214,24 +216,77 @@ class PersonaMenu(Menu):
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea
-        self.current_image = 'mc'
-        
-        self.image = ctk.CTkImage(light_image=Image.open(f'data/images/{self.current_image}.png'), dark_image=Image.open(f'data/images/{self.current_image}.png'), size=(200, 420))
-        self.img_label = ctk.CTkLabel(master=self.textarea, image=self.image, text='')
+        self.songs = {}
+        self.images = {}
+                
+        self.load_songs()
+        self.load_images()
+                
+        self.current_image = 'joker'
+        self.current_song = 'Beneath the Mask'
+        self.music_enabled = True
+                
+        self.img_label = ctk.CTkLabel(master=self.textarea, text='')
+        self.set_current_image('joker')
         
         self.img_label.grid(row=0, column=0, sticky='se', pady=20, padx=40)
+        
+        self.song_menu = Menu(self)
+                
+        self.add_command(label=f'Background Music: {'On' if self.music_enabled else 'Off'}', command=self.toggle_music)
+        
+        for song in self.songs:
+            self.song_menu.add_command(label=str(song), command=lambda s=song: self.change_song(s))
+        
+        self.add_cascade(label='Songs', menu=self.song_menu)
         
         self.add_command(label='Joker', command=lambda: self.set_current_image('joker'))
         self.add_command(label='Ann', command=lambda: self.set_current_image('ann'))
         self.add_command(label='Ryuji', command=lambda: self.set_current_image('ryuji'))
+        self.add_command(label='Morgana', command=lambda: self.set_current_image('morgana'))
+        self.add_command(label='Makoto', command=lambda: self.set_current_image('makoto'))
+        self.add_command(label='Yusuke', command=lambda: self.set_current_image('yusuke'))
+        
+        self.play_music()
+    
+    def toggle_music(self):
+        self.music_enabled = True if self.music_enabled == False else False
+        self.entryconfig(0, label=f'Background Music: {'On' if self.music_enabled else 'Off'}')
+                
+        if self.music_enabled:
+            self.play_music()
+        else:
+            self.stop_all_songs()
+    
+    def play_music(self):
+        self.stop_all_songs()
+        music = self.songs[self.current_song]
+        music.play(loops=-1)
+        music.set_volume(0.05)
+    
+    def change_song(self, song):
+        self.current_song = song
+        self.play_music()
+    
+    def stop_all_songs(self):
+        for song in self.songs:
+            self.songs[song].stop()
+     
+    def load_songs(self):
+        for song in os.listdir(os.path.join('persona_notepad', 'data', 'music')):
+            self.songs[song.split('.')[0]] = (pygame.mixer.Sound(os.path.join('persona_notepad', 'data', 'music', song)))
+    
+    def load_images(self):
+        for img in os.listdir(os.path.join('persona_notepad', 'data', 'images')):
+            curr_img = Image.open(os.path.join('persona_notepad', 'data', 'images', f'{img}'))
+            curr_img.thumbnail((200, 360)) 
+            self.images[img.split('.')[0]] = curr_img
         
     def set_current_image(self, character):
         self.current_image = character
-        self.set_image()
-        
-    def set_image(self):
-        img = Image.open(f'data/images/{self.current_image}.png')
-        img.thumbnail((200, 420))  # Keeps aspect ratio, fits box
+        img = self.images[self.current_image]
         self.image = ctk.CTkImage(light_image=img, dark_image=img, size=img.size)
         self.img_label.configure(image=self.image)
+
+        
         

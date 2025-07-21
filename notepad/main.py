@@ -1,5 +1,4 @@
 import customtkinter as ctk
-import pygame
 from menus import Menu, FileMenu, EditMenu, FormatMenu, DarkModeMenu
 from config import *
 
@@ -16,7 +15,7 @@ class App(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
                 
         # main menu
-        menu = Menu(self) #TODO Change the color of the menu so it looks better
+        menu = Menu(self) 
 
         # main textarea
         self.textarea = ctk.CTkTextbox(self, wrap='word', corner_radius=CORNER_RADIUS, font=(DEFAULT_FONT, DEFAULT_FONT_SIZE), spacing2=DEFAULT_LINE_HEIGHT, bg_color=BACKGROUND_COLORS['WHITE'])
