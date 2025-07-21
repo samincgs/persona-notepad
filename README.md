@@ -1,2 +1,2 @@
 # Notepad
-![notepad](https://github.com/user-attachments/assets/995a7ee9-790c-4505-9a15-dfed3ec92c6b)
+<img width="797" height="651" alt="persona-notepad" src="https://github.com/user-attachments/assets/e8b62f7e-d0c6-4c93-a122-3a8096eaed44" />
