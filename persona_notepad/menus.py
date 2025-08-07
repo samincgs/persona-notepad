@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import customtkinter as ctk
+from customtkinter import AppearanceModeTracker
 import pygame
 from tkinter import filedialog
 from PIL import Image
@@ -23,7 +24,6 @@ IGNORE_KEYS = {
 'Tab'  
 }
         
-
 class Menu(tk.Menu):
     def __init__(self, parent):
         super().__init__(parent, tearoff=0) 
@@ -80,7 +80,7 @@ class FileMenu(Menu):
             f.write(self.retrieve_text())
             f.close()
         
-class EditMenu(Menu): #TODO: ADD REDO AND UNDO Functionality
+class EditMenu(Menu): 
     def __init__(self, parent, textarea):
         super().__init__(parent)
         self.textarea = textarea
@@ -190,30 +190,23 @@ class FormatMenu(Menu):
         self.entryconfig(0, label=f'Word Wrap: {self.word_wrap_str}') # configure the menu item at a certain index
         
 class DarkModeMenu(Menu):
-    def __init__(self, parent, textarea):
+    def __init__(self, parent, textarea, app):
         super().__init__(parent)
         self.textarea = textarea
-        self.color_mode = DEFAULT_COLOR_MODE
-        ctk.set_appearance_mode(self.color_mode)
+        self.app = app
+        self.change_color_mode(DEFAULT_COLOR_MODE)
         
-        self.add_command(label='System', command=self.turn_system)
-        self.add_command(label='Dark', command=self.turn_dark)
-        self.add_command(label='Light', command=self.turn_light)
+        self.add_command(label='Dark', command=lambda: self.change_color_mode('dark'))
+        self.add_command(label='Light', command=lambda: self.change_color_mode('light'))
     
-    def turn_system(self):
-        self.color_mode = 'system'
+    def change_color_mode(self, color_mode):
+        self.color_mode = color_mode
         ctk.set_appearance_mode(self.color_mode)
-        
-    def turn_dark(self):
-        self.color_mode = 'dark'
-        ctk.set_appearance_mode(self.color_mode)
-        
-    def turn_light(self):
-        self.color_mode = 'light'
-        ctk.set_appearance_mode(self.color_mode)
-        
+        current_appearance_mode = AppearanceModeTracker().appearance_mode
+        self.app.iconbitmap('persona_notepad/data/icons/p5.ico' if current_appearance_mode == 1 else 'persona_notepad/data/icons/p5-light.ico')
+
 class PersonaMenu(Menu):
-    def __init__(self, parent, textarea):
+    def __init__(self, parent, textarea, app):
         super().__init__(parent)
         self.textarea = textarea
         self.songs = {}
@@ -225,12 +218,17 @@ class PersonaMenu(Menu):
         self.current_image = 'joker'
         self.current_song = 'Beneath the Mask'
         self.music_enabled = True
-                
-        self.img_label = ctk.CTkLabel(master=self.textarea, text='')
+        
+        self.img_frame = ctk.CTkFrame(master=app, border_width=0, corner_radius=0, fg_color=BACKGROUND_COLORS, bg_color=BACKGROUND_COLORS, border_color=BACKGROUND_COLORS)
+        self.img_label = ctk.CTkLabel(master=self.img_frame, text='', fg_color=BACKGROUND_COLORS, bg_color=BACKGROUND_COLORS, width=200, height=360)
+        
+        self.img_frame.grid_rowconfigure(0, weight=1)
+        self.img_frame.grid_columnconfigure(0, weight=1)
+
+        self.img_label.grid(row=0, column=0, sticky='se', padx=20, pady=10)
+        
         self.set_current_image('joker')
-        
-        self.img_label.grid(row=0, column=0, sticky='se', pady=20, padx=40)
-        
+                
         self.song_menu = Menu(self)
                 
         self.add_command(label=f'Background Music: {'On' if self.music_enabled else 'Off'}', command=self.toggle_music)
@@ -248,6 +246,8 @@ class PersonaMenu(Menu):
         self.add_command(label='Yusuke', command=lambda: self.set_current_image('yusuke'))
         
         self.play_music()
+        
+        self.img_frame.grid(row=0, column=1, sticky='nsew', padx=0, pady=0)
     
     def toggle_music(self):
         self.music_enabled = True if self.music_enabled == False else False
@@ -279,7 +279,7 @@ class PersonaMenu(Menu):
     def load_images(self):
         for img in os.listdir(os.path.join('persona_notepad', 'data', 'images')):
             curr_img = Image.open(os.path.join('persona_notepad', 'data', 'images', f'{img}'))
-            curr_img.thumbnail((200, 360)) 
+            curr_img.thumbnail(IMG_SIZE) 
             self.images[img.split('.')[0]] = curr_img
         
     def set_current_image(self, character):
